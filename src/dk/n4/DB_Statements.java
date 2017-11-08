@@ -10,8 +10,11 @@ public class DB_Statements {
     // Declare a connection
     private static Connection con = DB_Connector.connect();
 
-    //Declare a result set
+    // Declare a result set
     private static ResultSet rs = null;
+
+    // Declare a PreparedStatement
+    private static PreparedStatement pst = null;
 
     // Method to create a new database
     public void createNewDB(String DB_Name) {
@@ -135,20 +138,24 @@ public class DB_Statements {
 
     }
 
+    // Method to check for user credentials
     public Boolean checkLogin(String username, String password) {
 
         boolean check = false;
-        String query = "select * from thisdatabase.user where username = '" + username + "' and password = '" +
-                password + "'";
+        String query = "select * from thisdatabase.user where username = (?) and password = (?)";
         try {
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            //stmt = con.createStatement();
+            pst = con.prepareStatement(query);
+            //rs = stmt.executeQuery(query);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            rs = pst.executeQuery();
             while (rs.next()) {
                 check = true;
                 System.out.println("\n--Yoohoo! It works!!--");
             }
         } catch (SQLException e) {
-            System.out.println("\nDarn!!--");
+            System.out.println("\n--Darn!!--");
             e.printStackTrace();
         }
 
